@@ -24,13 +24,17 @@ jobs:
         with:
           gradle-version: "8.9"
 
+      - name: Extract Android project
+        run: |
+          unzip -o TopazAI_Studio_Multilingual_Project.zip -d project
+
       - name: Build debug APK
-        working-directory: TopazAI_Studio_Multilingual_Project
+        working-directory: project
         run: gradle assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: TopazAI-Studio-APK
-          path: TopazAI_Studio_Multilingual_Project/app/build/outputs/apk/debug/app-debug.apk
+          path: project/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
