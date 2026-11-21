@@ -1,3 +1,4 @@
+YAML
 name: Build Android APK
 
 on:
@@ -20,36 +21,19 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-version: '8.9'
-
       - name: Extract project ZIP
         run: unzip -o TopazAIMobile_source.zip -d project
 
-      - name: Fix Java and Kotlin targets
+      - name: Fix JVM targets
         run: |
-          cat > jvm-fix.gradle <<'EOF'
-          allprojects {
-            tasks.withType(JavaCompile).configureEach {
-              sourceCompatibility = '17'
-              targetCompatibility = '17'
-            }
-            tasks.configureEach {
-              if (name.toLowerCase().contains('kotlin')) {
-                try {
-                  kotlinOptions.jvmTarget = '17'
-                } catch (Exception ignored) {
-                }
-              }
-            }
-          }
-          EOF
+          sed -i 's/VERSION_1_8/VERSION_17/g' project/app/build.gradle.kts
+          sed -i 's/JVM_1_8/JVM_17/g' project/app/build.gradle.kts
+          sed -i 's/jvmTarget = "1.8"/jvmTarget = "17"/g' project/app/build.gradle.kts
 
       - name: Build APK
         working-directory: project
-        run: gradle -I ../jvm-fix.gradle assembleDebug
+        run: |
+          gradle assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
