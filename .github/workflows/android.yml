@@ -1,3 +1,4 @@
+
 name: Build Android APK
 
 on:
@@ -28,8 +29,11 @@ jobs:
       - name: Extract project ZIP
         run: unzip -o TopazAIMobile_source.zip -d project
 
-      - name: Fix targets and add dependency
+      - name: Fix source and build configuration
         run: |
+          sed -i 's/import android.app.Activity/import androidx.activity.ComponentActivity/' project/app/src/main/java/com/example/topazmobile/MainActivity.kt
+          sed -i 's/class MainActivity : Activity()/class MainActivity : ComponentActivity()/' project/app/src/main/java/com/example/topazmobile/MainActivity.kt
+
           cat >> project/app/build.gradle.kts <<'EOF'
 
           android {
